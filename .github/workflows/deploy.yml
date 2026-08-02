@@ -1,0 +1,31 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy GharrPay
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /opt/gharrpay
+            sudo GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git pull
+            sudo npm ci --prefix backend
+            sudo npm ci --prefix frontend
+            sudo npm run build --prefix frontend
+            sudo pm2 restart gharrpay
+            sudo pm2 save
