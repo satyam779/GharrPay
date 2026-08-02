@@ -55,7 +55,11 @@ const frontendDist = path.join(__dirname, "..", "frontend", "dist");
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(frontendDist));
   app.use((req, res, next) => {
-    if (req.method === "GET" && !req.path.startsWith("/api")) {
+    if (
+      req.method === "GET" &&
+      !req.path.startsWith("/api") &&
+      !path.extname(req.path)
+    ) {
       return res.sendFile(path.join(frontendDist, "index.html"));
     }
     next();
