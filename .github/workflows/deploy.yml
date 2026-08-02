@@ -86,5 +86,14 @@ jobs:
             sudo pm2 save
             sudo pm2 startup systemd -u root --hp /root || true
 
-            echo "==> Done. Health check:"
-            curl -s http://127.0.0.1:5000/api/health
+            echo "==> Waiting for app to start..."
+            sleep 6
+
+            echo "==> PM2 status:"
+            sudo pm2 status
+
+            echo "==> Last app logs:"
+            sudo pm2 logs gharrpay --lines 30 --nostream || true
+
+            echo "==> Health check:"
+            curl -sS --retry 5 --retry-connrefused --retry-delay 3 http://127.0.0.1:5000/api/health || true
