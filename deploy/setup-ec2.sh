@@ -26,6 +26,10 @@ REPO_URL="${1:?Usage: sudo bash deploy/setup-ec2.sh <git-repo-url>}"
 APP_DIR="/opt/gharrpay"
 NODE_MAJOR=22
 
+# Auto-accept the GitHub host key on first SSH clone (avoids a hanging prompt).
+# Use an SSH URL (git@github.com:user/repo.git) with a deploy key for private repos.
+export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new"
+
 echo "==> Installing system packages (curl, build-essential, git, nginx)..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
