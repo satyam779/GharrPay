@@ -25,7 +25,6 @@ jobs:
           port: 22
           timeout: 60s
           command_timeout: 15m
-          ssh_strict_host_key_checking: false
           envs: MONGO_URI,ADMIN_USERNAME,ADMIN_PASSWORD
           script: |
             set -e
@@ -44,15 +43,15 @@ jobs:
               sudo git clone https://github.com/satyam779/GharrPay.git "$APP_DIR"
               cd "$APP_DIR"
 
-              sudo tee backend/.env >/dev/null <<EOF
-              MONGO_URI=$MONGO_URI
-              PORT=5000
-              ADMIN_USERNAME=$ADMIN_USERNAME
-              ADMIN_PASSWORD=$ADMIN_PASSWORD
-              JWT_SECRET=$(openssl rand -hex 32)
-              CORS_ORIGIN=http://localhost:5173
-              TRUST_PROXY=1
-              EOF
+              {
+                echo "MONGO_URI=$MONGO_URI"
+                echo "PORT=5000"
+                echo "ADMIN_USERNAME=$ADMIN_USERNAME"
+                echo "ADMIN_PASSWORD=$ADMIN_PASSWORD"
+                echo "JWT_SECRET=$(openssl rand -hex 32)"
+                echo "CORS_ORIGIN=http://localhost:5173"
+                echo "TRUST_PROXY=1"
+              } | sudo tee backend/.env >/dev/null
 
               sudo npm ci --prefix backend
               sudo npm ci --prefix frontend
