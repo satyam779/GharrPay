@@ -14,7 +14,37 @@ const app = express();
 
 app.set("trust proxy", Number(process.env.TRUST_PROXY) || 0);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://images.unsplash.com",
+          "https://*.googleapis.com",
+          "https://*.gstatic.com",
+        ],
+        frameSrc: [
+          "'self'",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://www.google.com",
+          "https://*.google.com",
+        ],
+        connectSrc: ["'self'", "http:", "https:", "ws:", "wss:"],
+        upgradeInsecureRequests: null,
+      },
+    },
+  })
+);
 app.use(cors({
   origin: (process.env.CORS_ORIGIN || "http://localhost:5173")
     .split(",")
